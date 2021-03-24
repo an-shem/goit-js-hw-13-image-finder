@@ -1,5 +1,4 @@
 import './styls.css';
-import 'material-design-icons';
 import ApiService from './js/apiService';
 
 import templatesCards from './templates/templates-card.hbs';
@@ -11,7 +10,6 @@ import '@pnotify/core/dist/PNotify.css';
 
 defaultModules.set(PNotifyMobile, {});
 
-// --------------
 const sentinelRef = document.querySelector('#js-sentinel');
 const observer = new IntersectionObserver(loadMore, options);
 const options = {};
@@ -20,7 +18,6 @@ const galleryRef = document.querySelector('.gallery');
 const formRef = document.querySelector('#search-form');
 formRef.addEventListener('submit', onSubmit);
 
-// let searchQuery = '';
 const apiService = new ApiService();
 
 async function onSubmit(event) {
