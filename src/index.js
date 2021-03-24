@@ -1,6 +1,8 @@
 import './styls.css';
 import 'material-design-icons';
-import CreateGallery from './js/apiService';
+import ApiService from './js/apiService';
+
+import templatesCards from './templates/templates-card.hbs';
 
 import { error, defaultModules } from '@pnotify/core/dist/PNotify.js';
 import * as PNotifyMobile from '@pnotify/mobile/dist/PNotifyMobile.js';
@@ -10,14 +12,18 @@ import '@pnotify/core/dist/PNotify.css';
 defaultModules.set(PNotifyMobile, {});
 
 // --------------
-// const galleryRef = document.querySelector('.gallery');
+const sentinelRef = document.querySelector('#js-sentinel');
+const observer = new IntersectionObserver(loadMore, options);
+const options = {};
+
+const galleryRef = document.querySelector('.gallery');
 const formRef = document.querySelector('#search-form');
 formRef.addEventListener('submit', onSubmit);
 
-let searchQuery = '';
-const gallery = new CreateGallery();
+// let searchQuery = '';
+const apiService = new ApiService();
 
-function onSubmit(event) {
+async function onSubmit(event) {
   event.preventDefault();
   let newSearchQuery = event.currentTarget.elements.query.value.trim();
   if (newSearchQuery === '') {
@@ -27,11 +33,33 @@ function onSubmit(event) {
       animateSpeed: 'normal',
       delay: 2000,
     });
-  } else if (searchQuery === newSearchQuery) {
+    return;
+  } else if (apiService.query === newSearchQuery) {
     return;
   } else {
-    searchQuery = newSearchQuery;
-    gallery.reset();
-    gallery.display(searchQuery);
+    apiService.query = newSearchQuery;
+    //
+    galleryRef.innerHTML = '';
+    apiService.reset();
+    await fetchImages();
+    observer.observe(sentinelRef);
   }
+}
+
+async function loadMore(entries) {
+  await entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      fetchImages();
+    }
+  });
+}
+
+async function fetchImages() {
+  const images = await apiService.fetchImages();
+  renderGallery(images);
+}
+
+function renderGallery(images) {
+  const markupGallery = templatesCards(images);
+  galleryRef.insertAdjacentHTML('beforeend', markupGallery);
 }
