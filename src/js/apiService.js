@@ -7,8 +7,8 @@ const galleryRef = document.querySelector('.gallery');
 
 // -------------------
 export default class CreateGallery {
-  constructor(searchQuery) {
-    this.searchQuery = searchQuery;
+  constructor() {
+    this.searchQuery = '';
     this.page = 1;
   }
 
@@ -37,7 +37,13 @@ export default class CreateGallery {
     galleryRef.insertAdjacentHTML('beforeend', arr);
   }
 
-  display() {
+  display(searchQuery) {
+    this.searchQuery = searchQuery;
     this.fetchImages().then(this.render).then(this.markupGallery);
+  }
+
+  reset() {
+    galleryRef.innerHTML = '';
+    this.page = 1;
   }
 }
